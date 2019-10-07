@@ -27,20 +27,12 @@ namespace Gala
 
 	public class WindowManagerGala : Meta.Plugin, WindowManager
 	{
-		const uint GL_VENDOR = 0x1F00;
 		const string LOGIND_DBUS_NAME = "org.freedesktop.login1";
 		const string LOGIND_DBUS_OBJECT_PATH = "/org/freedesktop/login1";
 
-		delegate unowned string? GlQueryFunc (uint id);
-
 		static bool is_nvidia ()
 		{
-			var gl_get_string = (GlQueryFunc) Cogl.get_proc_address ("glGetString");
-			if (gl_get_string == null)
-				return false;
-
-			unowned string? vendor = gl_get_string (GL_VENDOR);
-			return (vendor != null && vendor.contains ("NVIDIA Corporation"));
+			return RendererInfo.get_default ().vendor == Vendor.NVIDIA;
 		}
 
 		/**
@@ -266,6 +258,14 @@ namespace Gala
 			KeyBinding.set_custom_handler ("show-desktop", () => {
 				try {
 					perform_action (ActionType.MINIMIZE_ALL);
+				} catch (Error e) {
+					warning (e.message);
+				}
+			});
+
+			display.add_keybinding ("focus-current", keybinding_schema, 0, () => {
+				try {
+					perform_action (ActionType.FOCUS_CURRENT);
 				} catch (Error e) {
 					warning (e.message);
 				}
@@ -679,6 +679,12 @@ namespace Gala
 				case ActionType.MINIMIZE_ALL:
 					foreach (var window in workspace.list_windows ()) {
 						if (window != null && window.window_type == WindowType.NORMAL)
+							window.minimize ();
+					}
+					break;
+				case ActionType.FOCUS_CURRENT:
+					foreach (var window in workspace.list_windows ()) {
+						if (window != null && window != current && window.window_type == WindowType.NORMAL)
 							window.minimize ();
 					}
 					break;

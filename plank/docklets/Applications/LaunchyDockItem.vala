@@ -54,14 +54,15 @@ namespace Docky
 			try {
 
 				int x, y;
-				get_icon_location(out x, out y);
-				launchy_settings.set_value ("window-position", new int[] { x, y });
+				//get_icon_location(out x, out y);
+				//launchy_settings.set_value ("window-position", new int[] { x, y });
 				
 				Process.spawn_command_line_async ("launchy");
+				return AnimationType.LIGHTEN; 
 			}catch(Error ex){
 				warning (ex.message);
 			}
-			return AnimationType.BOUNCE;
+			return AnimationType.NONE;
 		}
 
 		public override Gee.ArrayList<Gtk.MenuItem> get_menu_items ()

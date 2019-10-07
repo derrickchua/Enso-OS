@@ -37,8 +37,10 @@ gala_bin_sources = files(
 	'Widgets/WindowSwitcher.vala',
 	'Widgets/WorkspaceClone.vala',
 	'Widgets/WorkspaceInsertThumb.vala',
+	'Enso/BlurActor.vala',
+	'Enso/RendererInfo.vala',
 	'Enso/PreviewPage.vala',
-	'Enso/PreviewRow.vala',
+	# 'Enso/PreviewRow.vala',
 	'Enso/WindowSwitcher.vala',
 )
 

@@ -344,9 +344,7 @@ namespace Plank
 				return;
 			}
 			
-#if HAVE_HIDPI
 			window_scale_factor = controller.window.get_window ().get_scale_factor ();
-#endif
 			// take the previous frame values into account to decide if we
 			// can bail a full draw to not miss a finishing animation-frame
 			var no_full_draw_needed = (!is_first_frame && hide_progress == 1.0 && opacity == 1.0);
@@ -357,23 +355,17 @@ namespace Plank
 			
 			if (main_buffer == null) {
 				main_buffer = new Surface.with_cairo_surface (win_rect.width, win_rect.height, cr.get_target ());
-#if HAVE_HIDPI
 				main_buffer.Internal.set_device_scale (window_scale_factor, window_scale_factor);
-#endif
 			}
 			
 			if (item_buffer == null) {
 				item_buffer = new Surface.with_cairo_surface (win_rect.width, win_rect.height, cr.get_target ());
-#if HAVE_HIDPI
 				item_buffer.Internal.set_device_scale (window_scale_factor, window_scale_factor);
-#endif
 			}
 			
 			if (shadow_buffer == null) {
 				shadow_buffer = new Surface.with_cairo_surface (win_rect.width, win_rect.height, cr.get_target ());
-#if HAVE_HIDPI
 				shadow_buffer.Internal.set_device_scale (window_scale_factor, window_scale_factor);
-#endif
 			}
 			
 			// if the dock is completely hidden and not transparently drawn
@@ -395,9 +387,7 @@ namespace Plank
 
 			if (opacity < 1.0 && fade_buffer == null) {
 				fade_buffer = new Surface.with_cairo_surface (win_rect.width, win_rect.height, cr.get_target ());
-#if HAVE_HIDPI
 				fade_buffer.Internal.set_device_scale (window_scale_factor, window_scale_factor);
-#endif
 			}
 			
 #if BENCHMARK
@@ -610,11 +600,17 @@ namespace Plank
 				case AnimationType.NONE:
 					break;
 				case AnimationType.LIGHTEN:
+						draw_value.lighten = hover_animation_progress * 0.2;
+					break;
+				case AnimationType.POPUP:
 					draw_value.lighten = hover_animation_progress * 0.2;
+					if (screen_is_composited)
+						y_offset += 2;
 					break;
 				}
 			} else if (hovered_item == item) {
 				draw_value.lighten = 0.2;
+				y_offset += 2;
 			}
 			
 			if (hovered_item == item && controller.window.menu_is_visible ())
@@ -873,7 +869,6 @@ namespace Plank
 		[CCode (instance_pos = -1)]
 		Surface draw_item_foreground (int width, int height, Surface model, DockItem item)
 		{
-			warning("draw_item_foreground");
 			Logger.verbose ("DockItem.draw_item_overlay (width = %i, height = %i)", width, height);
 			var surface = new Surface.with_surface (width, height, model);
 			
